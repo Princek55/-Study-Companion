@@ -1,0 +1,1746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Productivity Companion</title>
+
+<style>
+/* =========================================================
+   Student Productivity Companion — Design System (single file)
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg: #14132B;
+  --bg-soft: #1A1938;
+  --panel: #1E1B4B;
+  --panel-raised: #26235C;
+  --border: #35316E;
+
+  --violet: #7C6FF0;
+  --violet-dim: #4B4396;
+  --gold: #F5B942;
+  --mint: #34D399;
+  --coral: #FB7185;
+
+  --ink: #F4F2FF;
+  --ink-dim: #C9C5E8;
+  --muted: #9691B8;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+
+  --shadow-panel: 0 10px 30px rgba(8, 7, 24, 0.45);
+
+  --font-display: 'Sora', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+
+  --sidebar-w: 240px;
+}
+
+[data-theme="dark"] {
+  --bg: #0B0B12; --bg-soft: #101018; --panel: #16161F; --panel-raised: #1D1D29;
+  --border: #2A2A38; --violet: #8B7CF6;
+}
+[data-theme="ocean"] {
+  --bg: #08202B; --bg-soft: #0C2938; --panel: #0F3243; --panel-raised: #14415A;
+  --border: #1E5470; --violet: #3FC1C9; --gold: #FFC857;
+}
+
+* { box-sizing: border-box; }
+html { color-scheme: dark; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  background-image:
+    radial-gradient(circle at 15% 0%, rgba(124, 111, 240, 0.12), transparent 45%),
+    radial-gradient(circle at 85% 20%, rgba(245, 185, 66, 0.08), transparent 40%);
+  color: var(--ink);
+  font-family: var(--font-body);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, .display { font-family: var(--font-display); color: var(--ink); margin: 0 0 4px; letter-spacing: -0.01em; }
+h1 { font-size: 28px; font-weight: 800; }
+h2 { font-size: 21px; font-weight: 700; }
+h3 { font-size: 16px; font-weight: 700; }
+p { color: var(--ink-dim); }
+a { color: inherit; }
+button, input, select, textarea { font-family: var(--font-body); }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+/* App shell */
+.app-shell { display: none; min-height: 100vh; }
+.app-shell.show { display: flex; }
+
+.sidebar {
+  width: var(--sidebar-w); flex-shrink: 0; background: var(--bg-soft);
+  border-right: 1px solid var(--border); padding: 24px 16px;
+  display: flex; flex-direction: column; gap: 28px;
+  position: sticky; top: 0; height: 100vh;
+}
+
+.brand { display: flex; align-items: center; gap: 10px; padding: 0 8px; }
+.brand-mark {
+  width: 34px; height: 34px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--violet), var(--gold));
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800; color: #14132B; font-size: 16px;
+}
+.brand-name { font-family: var(--font-display); font-weight: 700; font-size: 15px; line-height: 1.15; }
+.brand-name span { display: block; font-size: 11px; color: var(--muted); font-weight: 500; }
+
+.nav-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.nav-list a {
+  display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: var(--radius-sm);
+  text-decoration: none; color: var(--ink-dim); font-weight: 600; font-size: 14px; cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.nav-list a .icon { font-size: 17px; width: 20px; text-align: center; }
+.nav-list a:hover { background: var(--panel); color: var(--ink); }
+.nav-list a.active { background: var(--panel-raised); color: var(--ink); box-shadow: inset 3px 0 0 var(--violet); }
+
+.sidebar-footer { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
+.mini-streak { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: var(--panel); border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; color: var(--gold); }
+.logout-btn { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: var(--radius-sm); padding: 9px 12px; font-size: 13px; font-weight: 600; cursor: pointer; text-align: left; }
+.logout-btn:hover { color: var(--coral); border-color: var(--coral); }
+
+.main { flex: 1; min-width: 0; padding: 28px 34px 60px; }
+
+.view { display: none; }
+.view.active { display: block; }
+
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 26px; flex-wrap: wrap; }
+.topbar .greeting p { margin: 2px 0 0; font-size: 14px; }
+.topbar-stats { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.pill { display: flex; align-items: center; gap: 6px; background: var(--panel); border: 1px solid var(--border); padding: 7px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; font-family: var(--font-display); }
+.pill.gold { color: var(--gold); }
+.pill.mint { color: var(--mint); }
+.pill.violet { color: var(--violet); }
+
+.panel { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px; box-shadow: var(--shadow-panel); }
+.panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; gap: 10px; }
+
+.grid { display: grid; gap: 18px; }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 980px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; border-radius: var(--radius-sm); padding: 11px 18px; font-weight: 700; font-size: 14px; font-family: var(--font-body); cursor: pointer; transition: transform 0.1s ease, filter 0.15s ease; }
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--violet); color: #fff; }
+.btn-primary:hover { filter: brightness(1.1); }
+.btn-gold { background: var(--gold); color: #241A02; }
+.btn-gold:hover { filter: brightness(1.08); }
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--ink-dim); }
+.btn-ghost:hover { border-color: var(--violet); color: var(--ink); }
+.btn-danger { background: var(--coral); color: #2B0A0F; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-block { width: 100%; }
+
+.hero-hud { display: flex; align-items: center; gap: 26px; flex-wrap: wrap; }
+.xp-ring-wrap { position: relative; width: 132px; height: 132px; flex-shrink: 0; }
+.xp-ring-wrap svg { transform: rotate(-90deg); }
+.xp-ring-track { fill: none; stroke: var(--border); stroke-width: 10; }
+.xp-ring-fill { fill: none; stroke: url(#xpGradient); stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 0.6s ease; }
+.xp-ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.xp-ring-center .level-num { font-family: var(--font-display); font-size: 30px; font-weight: 800; line-height: 1; }
+.xp-ring-center .level-label { font-size: 10px; color: var(--muted); font-weight: 700; margin-top: 2px; }
+
+.hero-facts { display: flex; gap: 26px; flex-wrap: wrap; }
+.fact { min-width: 90px; }
+.fact .fact-num { font-family: var(--font-display); font-size: 24px; font-weight: 800; }
+.fact .fact-label { font-size: 12px; color: var(--muted); font-weight: 600; }
+
+.bar-track { height: 10px; width: 100%; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 999px; overflow: hidden; }
+.bar-fill { height: 100%; background: linear-gradient(90deg, var(--violet), var(--gold)); border-radius: 999px; transition: width 0.5s ease; }
+.bar-fill.mint { background: linear-gradient(90deg, #16A38A, var(--mint)); }
+.bar-caption { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+.quest-card { background: var(--panel-raised); border: 1px solid var(--border); border-left: 4px solid var(--muted); border-radius: var(--radius-md); padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+.quest-card.priority-Low { border-left-color: var(--mint); }
+.quest-card.priority-Medium { border-left-color: var(--gold); }
+.quest-card.priority-High { border-left-color: var(--coral); }
+.quest-card.overdue { border-left-color: var(--coral); background: rgba(251, 113, 133, 0.08); }
+.quest-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.quest-card-top h3 { margin: 0; }
+.quest-meta { display: flex; gap: 8px; flex-wrap: wrap; font-size: 11px; }
+.tag { padding: 3px 9px; border-radius: 999px; background: var(--bg-soft); border: 1px solid var(--border); color: var(--ink-dim); font-weight: 600; white-space: nowrap; }
+.tag.overdue-tag { color: var(--coral); border-color: var(--coral); }
+.quest-card-desc { font-size: 13px; color: var(--ink-dim); margin: 0; }
+.quest-card-actions { display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+.quest-card-actions .btn { padding: 7px 12px; font-size: 12.5px; }
+
+.empty-state { text-align: center; padding: 40px 20px; color: var(--muted); }
+.empty-state .empty-icon { font-size: 34px; margin-bottom: 8px; }
+
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.field label { font-size: 12.5px; font-weight: 700; color: var(--ink-dim); }
+.field input, .field select, .field textarea { background: var(--bg-soft); border: 1px solid var(--border); color: var(--ink); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 14px; }
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--violet); }
+.field-row { display: flex; gap: 12px; }
+.field-row .field { flex: 1; }
+
+.form-error { background: rgba(251, 113, 133, 0.12); border: 1px solid var(--coral); color: var(--coral); padding: 9px 12px; border-radius: var(--radius-sm); font-size: 13px; margin-bottom: 14px; display: none; }
+.form-error.show { display: block; }
+.form-success { background: rgba(52, 211, 153, 0.12); border: 1px solid var(--mint); color: var(--mint); padding: 9px 12px; border-radius: var(--radius-sm); font-size: 13px; margin-bottom: 14px; display: none; }
+.form-success.show { display: block; }
+
+.modal-backdrop { position: fixed; inset: 0; background: rgba(8, 7, 20, 0.6); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 100; }
+.modal-backdrop.show { display: flex; }
+.modal { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-panel); }
+.modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.icon-btn { background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer; line-height: 1; padding: 4px; }
+.icon-btn:hover { color: var(--ink); }
+
+.toast-stack { position: fixed; top: 20px; right: 20px; z-index: 200; display: flex; flex-direction: column; gap: 10px; }
+.toast { background: var(--panel-raised); border: 1px solid var(--gold); border-radius: var(--radius-md); padding: 12px 16px; min-width: 240px; box-shadow: var(--shadow-panel); display: flex; align-items: center; gap: 10px; animation: toast-in 0.25s ease; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(-10px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.toast .toast-icon { font-size: 22px; }
+.toast .toast-title { font-weight: 700; font-size: 13.5px; }
+.toast .toast-sub { font-size: 12px; color: var(--muted); }
+
+.badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 14px; }
+.badge-item { text-align: center; padding: 16px 10px; border-radius: var(--radius-md); border: 1px solid var(--border); background: var(--panel-raised); }
+.badge-item.locked { opacity: 0.35; filter: grayscale(1); }
+.badge-item .badge-icon { font-size: 30px; }
+.badge-item .badge-name { font-size: 12px; font-weight: 700; margin-top: 6px; }
+
+.store-item { border: 1px solid var(--border); background: var(--panel-raised); border-radius: var(--radius-md); padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.store-swatch { height: 60px; border-radius: var(--radius-sm); }
+.store-swatch.theme-default { background: linear-gradient(135deg, #7C6FF0, #F5B942); }
+.store-swatch.theme-dark { background: linear-gradient(135deg, #1D1D29, #8B7CF6); }
+.store-swatch.theme-ocean { background: linear-gradient(135deg, #0F3243, #3FC1C9); }
+.store-swatch.theme-sticker { background: linear-gradient(135deg, #34D399, #7C6FF0); display:flex; align-items:center; justify-content:center; font-size: 26px; }
+
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.cal-day-head { text-align: center; font-size: 11px; font-weight: 700; color: var(--muted); padding: 6px 0; }
+.cal-cell { min-height: 78px; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px; background: var(--panel-raised); font-size: 11px; }
+.cal-cell.today { border-color: var(--violet); box-shadow: inset 0 0 0 1px var(--violet); }
+.cal-cell.empty { background: transparent; border-color: transparent; }
+.cal-date { font-weight: 700; font-size: 12px; margin-bottom: 4px; }
+.cal-task-dot { display: block; font-size: 10px; padding: 1px 5px; border-radius: 4px; margin-top: 2px; background: var(--bg-soft); color: var(--ink-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cal-task-dot.priority-High { border-left: 2px solid var(--coral); }
+.cal-task-dot.priority-Medium { border-left: 2px solid var(--gold); }
+.cal-task-dot.priority-Low { border-left: 2px solid var(--mint); }
+.deadline-list-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.deadline-list-item:last-child { border-bottom: none; }
+
+.timer-wrap { text-align: center; padding: 10px 0 4px; }
+.timer-display { font-family: var(--font-display); font-size: 72px; font-weight: 800; letter-spacing: -0.02em; margin: 10px 0; }
+.timer-modes { display: flex; justify-content: center; gap: 8px; margin-bottom: 18px; }
+.timer-mode-btn { background: var(--bg-soft); border: 1px solid var(--border); color: var(--ink-dim); padding: 8px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 700; cursor: pointer; }
+.timer-mode-btn.active { background: var(--violet); color: #fff; border-color: var(--violet); }
+.timer-controls { display: flex; justify-content: center; gap: 10px; margin-top: 16px; }
+
+.filter-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+.filter-bar select, .filter-bar input { background: var(--panel); border: 1px solid var(--border); color: var(--ink); padding: 8px 10px; border-radius: var(--radius-sm); font-size: 13px; }
+
+.auth-shell { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.auth-card { width: 100%; max-width: 400px; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px; box-shadow: var(--shadow-panel); }
+.auth-tabs { display: flex; background: var(--bg-soft); border-radius: var(--radius-sm); padding: 4px; margin-bottom: 22px; }
+.auth-tab { flex: 1; text-align: center; padding: 9px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; color: var(--muted); border: none; background: none; }
+.auth-tab.active { background: var(--violet); color: #fff; }
+.auth-form { display: none; }
+.auth-form.active { display: block; }
+
+.chart-bars { display: flex; align-items: flex-end; gap: 8px; height: 140px; padding-top: 10px; }
+.chart-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; height: 100%; }
+.chart-bar { width: 100%; max-width: 28px; background: linear-gradient(180deg, var(--violet), var(--violet-dim)); border-radius: 6px 6px 0 0; min-height: 4px; }
+.chart-bar-label { font-size: 10px; color: var(--muted); }
+
+.loading-shell { min-height: 100vh; display: flex; align-items: center; justify-content: center; color: var(--muted); }
+
+@media (max-width: 860px) {
+  .app-shell { flex-direction: column; }
+  .sidebar { width: 100%; height: auto; position: static; flex-direction: row; align-items: center; overflow-x: auto; padding: 12px 14px; }
+  .sidebar-footer { display: none; }
+  .nav-list { flex-direction: row; }
+  .nav-list a span.label { display: none; }
+  .main { padding: 18px 16px 40px; }
+  .timer-display { font-size: 52px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     Loading state (shown briefly while we check for a session)
+     ============================================================ -->
+<div class="loading-shell" id="loading-shell"><p>Loading...</p></div>
+
+<!-- ============================================================
+     Auth view
+     ============================================================ -->
+<div class="auth-shell" id="auth-shell" style="display:none;">
+  <div class="auth-card">
+    <div class="brand" style="margin-bottom:22px;">
+      <div class="brand-mark">SP</div>
+      <div class="brand-name">Study Companion<span>Level up your studying</span></div>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" type="button">Log in</button>
+      <button class="auth-tab" id="tab-signup" type="button">Sign up</button>
+    </div>
+
+    <div id="form-error" class="form-error" role="alert"></div>
+    <div id="form-success" class="form-success" role="status"></div>
+
+    <form class="auth-form active" id="login-form">
+      <div class="field">
+        <label for="login-email">Email</label>
+        <input type="email" id="login-email" required autocomplete="email">
+      </div>
+      <div class="field">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" required autocomplete="current-password" minlength="6">
+      </div>
+      <button type="submit" class="btn btn-primary btn-block" id="login-submit">Log in</button>
+    </form>
+
+    <form class="auth-form" id="signup-form">
+      <div class="field">
+        <label for="signup-name">Full name</label>
+        <input type="text" id="signup-name" required autocomplete="name">
+      </div>
+      <div class="field">
+        <label for="signup-email">Email</label>
+        <input type="email" id="signup-email" required autocomplete="email">
+      </div>
+      <div class="field">
+        <label for="signup-password">Password</label>
+        <input type="password" id="signup-password" required autocomplete="new-password" minlength="6">
+        <span style="font-size:12px;color:var(--muted);">At least 6 characters.</span>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block" id="signup-submit">Create account</button>
+    </form>
+  </div>
+</div>
+
+<!-- ============================================================
+     App shell (sidebar + views)
+     ============================================================ -->
+<div class="app-shell" id="app-shell">
+  <nav class="sidebar" id="sidebar-mount" aria-label="Main navigation"></nav>
+
+  <main class="main">
+    <div class="topbar" id="topbar-mount"></div>
+
+    <!-- ---------- Dashboard ---------- -->
+    <section class="view" id="view-dashboard">
+      <div class="grid grid-2" style="margin-bottom:18px;">
+        <section class="panel">
+          <div class="panel-head"><h2>Your progress</h2></div>
+          <div class="hero-hud">
+            <div class="xp-ring-wrap">
+              <svg viewBox="0 0 132 132" width="132" height="132">
+                <defs>
+                  <linearGradient id="xpGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#7C6FF0"/>
+                    <stop offset="100%" stop-color="#F5B942"/>
+                  </linearGradient>
+                </defs>
+                <circle class="xp-ring-track" cx="66" cy="66" r="56"></circle>
+                <circle class="xp-ring-fill" id="xp-ring-fill" cx="66" cy="66" r="56"></circle>
+              </svg>
+              <div class="xp-ring-center">
+                <div class="level-num" id="hero-level">1</div>
+                <div class="level-label">LEVEL</div>
+              </div>
+            </div>
+            <div class="hero-facts">
+              <div class="fact"><div class="fact-num" id="hero-xp">0</div><div class="fact-label">Total XP</div></div>
+              <div class="fact"><div class="fact-num" id="hero-coins">0</div><div class="fact-label">Coins</div></div>
+              <div class="fact"><div class="fact-num" id="hero-streak">0</div><div class="fact-label">Day streak</div></div>
+              <div class="fact"><div class="fact-num" id="hero-completed">0</div><div class="fact-label">Tasks done</div></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><h2>Quick actions</h2></div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px;">
+            <a href="#" class="btn btn-primary" data-nav="tasks">+ Add Task</a>
+            <a href="#" class="btn btn-gold" data-nav="focus">&#9654; Start Focus Session</a>
+            <a href="#" class="btn btn-ghost" data-nav="calendar">View Calendar</a>
+          </div>
+          <h3 style="margin-bottom:8px;">Today's goal</h3>
+          <div class="bar-track"><div class="bar-fill mint" id="daily-goal-bar" style="width:0%;"></div></div>
+          <div class="bar-caption">
+            <span id="daily-goal-caption">0 of 0 tasks done today</span>
+            <span id="daily-goal-percent">0%</span>
+          </div>
+        </section>
+      </div>
+
+      <div class="grid grid-2">
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Today's tasks</h2>
+            <a href="#" class="btn btn-ghost" data-nav="tasks" style="padding:7px 12px;font-size:12.5px;">See all</a>
+          </div>
+          <div id="today-tasks-list" style="display:flex; flex-direction:column; gap:10px;"><p style="color:var(--muted);">Loading...</p></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Upcoming deadlines</h2>
+            <a href="#" class="btn btn-ghost" data-nav="calendar" style="padding:7px 12px;font-size:12.5px;">Calendar</a>
+          </div>
+          <div id="upcoming-deadlines-list"><p style="color:var(--muted);">Loading...</p></div>
+        </section>
+      </div>
+    </section>
+
+    <!-- ---------- Task Planner ---------- -->
+    <section class="view" id="view-tasks">
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Task Planner</h2>
+          <button class="btn btn-primary" id="open-add-task">+ Add Task</button>
+        </div>
+
+        <div class="filter-bar">
+          <select id="filter-subject" aria-label="Filter by subject"><option value="">All subjects</option></select>
+          <select id="filter-priority" aria-label="Filter by priority">
+            <option value="">All priorities</option><option>Low</option><option>Medium</option><option>High</option>
+          </select>
+          <select id="filter-status" aria-label="Filter by status">
+            <option value="">All statuses</option><option>Pending</option><option>In Progress</option><option>Completed</option>
+          </select>
+          <select id="filter-deadline" aria-label="Filter by deadline">
+            <option value="">Any deadline</option>
+            <option value="overdue">Overdue</option>
+            <option value="today">Due today</option>
+            <option value="week">Due this week</option>
+          </select>
+        </div>
+
+        <div id="task-list" style="display:flex; flex-direction:column; gap:12px;"><p style="color:var(--muted);">Loading tasks...</p></div>
+      </section>
+    </section>
+
+    <!-- ---------- Focus Timer ---------- -->
+    <section class="view" id="view-focus">
+      <div class="grid grid-2">
+        <section class="panel">
+          <div class="panel-head"><h2>Pomodoro Focus Timer</h2></div>
+          <div class="field">
+            <label for="focus-task-select">Working on</label>
+            <select id="focus-task-select"><option value="">No specific task</option></select>
+          </div>
+          <div class="timer-wrap">
+            <div class="timer-modes">
+              <button class="timer-mode-btn active" data-mode="focus" data-minutes="25">Focus 25</button>
+              <button class="timer-mode-btn" data-mode="short_break" data-minutes="5">Short break 5</button>
+              <button class="timer-mode-btn" data-mode="long_break" data-minutes="15">Long break 15</button>
+            </div>
+            <div class="timer-display" id="timer-display">25:00</div>
+            <div class="timer-controls">
+              <button class="btn btn-primary" id="timer-start">&#9654; Start</button>
+              <button class="btn btn-ghost" id="timer-pause" disabled>&#9208; Pause</button>
+              <button class="btn btn-ghost" id="timer-reset">&#8634; Reset</button>
+              <button class="btn btn-ghost" id="timer-skip">&#9197; Skip</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><h2>Today's focus</h2></div>
+          <div class="fact" style="margin-bottom:18px;">
+            <div class="fact-num" id="focus-total-today">0 min</div>
+            <div class="fact-label">Total focus time today</div>
+          </div>
+          <h3 style="margin-bottom:10px;">Recent sessions</h3>
+          <div id="focus-session-list"><p style="color:var(--muted);">Loading...</p></div>
+        </section>
+      </div>
+    </section>
+
+    <!-- ---------- Calendar ---------- -->
+    <section class="view" id="view-calendar">
+      <div class="grid grid-2">
+        <section class="panel">
+          <div class="panel-head">
+            <h2 id="cal-month-label">Calendar</h2>
+            <div style="display:flex; gap:8px;">
+              <button class="btn btn-ghost" id="cal-prev" style="padding:7px 12px;">&larr;</button>
+              <button class="btn btn-ghost" id="cal-next" style="padding:7px 12px;">&rarr;</button>
+            </div>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><h2>Next 7 days</h2></div>
+          <div id="deadline-week-list"><p style="color:var(--muted);">Loading...</p></div>
+          <div class="panel-head" style="margin-top:22px;"><h2>Due within 24 hours</h2></div>
+          <div id="deadline-soon-list"><p style="color:var(--muted);">No urgent deadlines.</p></div>
+        </section>
+      </div>
+    </section>
+
+    <!-- ---------- Reward Store ---------- -->
+    <section class="view" id="view-store">
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Reward Store</h2>
+          <div class="pill gold">&#129689; <span id="store-coin-count">0</span> coins</div>
+        </div>
+        <div class="grid grid-3" id="store-grid"><p style="color:var(--muted);">Loading store...</p></div>
+      </section>
+    </section>
+
+    <!-- ---------- Profile & Analytics ---------- -->
+    <section class="view" id="view-profile">
+      <div class="grid grid-2" style="margin-bottom:18px;">
+        <section class="panel">
+          <div class="panel-head"><h2>Your profile</h2></div>
+          <div id="profile-form-success" class="form-success" role="status"></div>
+          <form id="profile-form">
+            <div class="field">
+              <label for="profile-name">Display name</label>
+              <input type="text" id="profile-name" required>
+            </div>
+            <div class="field">
+              <label for="profile-theme">Active theme</label>
+              <select id="profile-theme"><option value="default">Default (Night)</option></select>
+            </div>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+          </form>
+          <div class="grid grid-2" style="margin-top:22px;">
+            <div class="fact"><div class="fact-num" id="p-level">1</div><div class="fact-label">Level</div></div>
+            <div class="fact"><div class="fact-num" id="p-xp">0</div><div class="fact-label">Total XP</div></div>
+            <div class="fact"><div class="fact-num" id="p-coins">0</div><div class="fact-label">Coins</div></div>
+            <div class="fact"><div class="fact-num" id="p-streak">0</div><div class="fact-label">Current streak</div></div>
+            <div class="fact"><div class="fact-num" id="p-tasks">0</div><div class="fact-label">Tasks completed</div></div>
+            <div class="fact"><div class="fact-num" id="p-focus">0 min</div><div class="fact-label">Total focus time</div></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><h2>Achievement badges</h2></div>
+          <div class="badge-grid" id="badge-grid"><p style="color:var(--muted);">Loading...</p></div>
+        </section>
+      </div>
+
+      <div class="grid grid-3">
+        <section class="panel">
+          <h3 style="margin-bottom:6px;">Weekly completed tasks</h3>
+          <div class="chart-bars" id="chart-tasks"></div>
+        </section>
+        <section class="panel">
+          <h3 style="margin-bottom:6px;">Weekly focus time (min)</h3>
+          <div class="chart-bars" id="chart-focus"></div>
+        </section>
+        <section class="panel">
+          <h3 style="margin-bottom:6px;">Subject-wise completion</h3>
+          <div class="chart-bars" id="chart-subjects"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Add / edit task modal -->
+<div class="modal-backdrop" id="task-modal-backdrop">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="task-modal-title">Add task</h2>
+      <button class="icon-btn" id="close-task-modal" aria-label="Close">&#10005;</button>
+    </div>
+    <div id="task-form-error" class="form-error" role="alert"></div>
+    <form id="task-form">
+      <input type="hidden" id="task-id">
+      <div class="field">
+        <label for="task-title">Title</label>
+        <input type="text" id="task-title" required>
+      </div>
+      <div class="field">
+        <label for="task-description">Description</label>
+        <textarea id="task-description" rows="2"></textarea>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="task-subject">Subject / category</label>
+          <input type="text" id="task-subject" placeholder="e.g. Chemistry">
+        </div>
+        <div class="field">
+          <label for="task-priority">Priority</label>
+          <select id="task-priority"><option>Low</option><option selected>Medium</option><option>High</option></select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="task-deadline">Deadline</label>
+          <input type="datetime-local" id="task-deadline">
+        </div>
+        <div class="field">
+          <label for="task-estimated">Estimated time (minutes)</label>
+          <input type="number" id="task-estimated" min="5" step="5" value="30">
+        </div>
+      </div>
+      <div class="field">
+        <label for="task-status">Status</label>
+        <select id="task-status"><option>Pending</option><option>In Progress</option><option>Completed</option></select>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block" id="task-form-submit">Save task</button>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* =========================================================
+   Supabase configuration
+   ========================================================= */
+const SUPABASE_URL = "https://sugscfbgifpvggosjdqn.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_YLtYPp8UaV_iqKpal565xQ_9oD3LH_Z";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+/* =========================================================
+   Shared state
+   ========================================================= */
+let currentUser = null;
+let currentProfile = null;
+let currentView = "dashboard";
+const loadedViews = new Set();
+
+/* =========================================================
+   Utilities
+   ========================================================= */
+function showToast({ icon = "\u2728", title, sub = "", duration = 3200 }) {
+  let stack = document.querySelector(".toast-stack");
+  if (!stack) {
+    stack = document.createElement("div");
+    stack.className = "toast-stack";
+    document.body.appendChild(stack);
+  }
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.innerHTML = `
+    <div class="toast-icon">${icon}</div>
+    <div>
+      <div class="toast-title">${title}</div>
+      ${sub ? `<div class="toast-sub">${sub}</div>` : ""}
+    </div>
+  `;
+  stack.appendChild(toast);
+  setTimeout(() => toast.remove(), duration);
+}
+
+function applyTheme(themeName) {
+  if (themeName && themeName !== "default") {
+    document.documentElement.setAttribute("data-theme", themeName);
+  } else {
+    document.documentElement.removeAttribute("data-theme");
+  }
+}
+
+function formatShortDate(isoString) {
+  if (!isoString) return "No date";
+  const d = new Date(isoString);
+  return d.toLocaleDateString(undefined, { day: "numeric", month: "short" });
+}
+
+function formatDateTime(isoString) {
+  if (!isoString) return "No date";
+  const d = new Date(isoString);
+  return d.toLocaleString(undefined, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+}
+
+function isOverdue(isoString, status) {
+  if (!isoString || status === "Completed") return false;
+  return new Date(isoString).getTime() < Date.now();
+}
+
+function isWithinHours(isoString, hours) {
+  if (!isoString) return false;
+  const diff = new Date(isoString).getTime() - Date.now();
+  return diff > 0 && diff <= hours * 60 * 60 * 1000;
+}
+
+const XP_PER_LEVEL = 100;
+function levelFromXp(totalXp) { return Math.floor(totalXp / XP_PER_LEVEL) + 1; }
+function xpIntoCurrentLevel(totalXp) { return totalXp % XP_PER_LEVEL; }
+
+function escapeHtml(str = "") {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+/* =========================================================
+   Sidebar / topbar / view router
+   ========================================================= */
+function renderSidebar(activeView, profile) {
+  const mount = document.getElementById("sidebar-mount");
+  const streak = profile?.current_streak ?? 0;
+
+  mount.innerHTML = `
+    <div class="brand">
+      <div class="brand-mark">SP</div>
+      <div class="brand-name">Study Companion<span>Level up your studying</span></div>
+    </div>
+    <ul class="nav-list">
+      <li><a href="#" data-page="dashboard"><span class="icon">\u{1F3E0}</span><span class="label">Dashboard</span></a></li>
+      <li><a href="#" data-page="tasks"><span class="icon">\u{1F4DD}</span><span class="label">Task Planner</span></a></li>
+      <li><a href="#" data-page="focus"><span class="icon">\u23F1\uFE0F</span><span class="label">Focus Timer</span></a></li>
+      <li><a href="#" data-page="calendar"><span class="icon">\u{1F4C5}</span><span class="label">Calendar</span></a></li>
+      <li><a href="#" data-page="store"><span class="icon">\u{1F6CD}\uFE0F</span><span class="label">Reward Store</span></a></li>
+      <li><a href="#" data-page="profile"><span class="icon">\u{1F464}</span><span class="label">Profile</span></a></li>
+    </ul>
+    <div class="sidebar-footer">
+      <div class="mini-streak"><span>\u{1F525}</span><span>${streak} day streak</span></div>
+      <button class="logout-btn" id="logout-btn">Log out</button>
+    </div>
+  `;
+
+  mount.querySelectorAll("[data-page]").forEach((link) => {
+    link.classList.toggle("active", link.dataset.page === activeView);
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      navigateTo(link.dataset.page);
+    });
+  });
+
+  document.getElementById("logout-btn").addEventListener("click", handleLogout);
+}
+
+function renderTopbar(profile, subtitle = "") {
+  const mount = document.getElementById("topbar-mount");
+  if (!mount || !profile) return;
+  mount.innerHTML = `
+    <div class="greeting">
+      <h1>Welcome back, ${escapeHtml(profile.full_name)} \u{1F44B}</h1>
+      ${subtitle ? `<p>${subtitle}</p>` : ""}
+    </div>
+    <div class="topbar-stats">
+      <div class="pill violet">\u2B50 Level ${profile.level}</div>
+      <div class="pill gold">\u{1FA99} ${profile.coins}</div>
+      <div class="pill mint">\u{1F525} ${profile.current_streak} day streak</div>
+    </div>
+  `;
+}
+
+const VIEW_SUBTITLES = {
+  dashboard: "Here's how your quest is going today.",
+  tasks: "Plan it, do it, level up.",
+  focus: "One focused block at a time.",
+  calendar: "Every deadline, in one view.",
+  store: "Spend your coins on themes and stickers.",
+  profile: "Your stats, badges, and settings.",
+};
+
+const VIEW_LOADERS = {
+  dashboard: loadDashboard,
+  tasks: loadTasksView,
+  focus: loadFocusView,
+  calendar: loadCalendarView,
+  store: loadStoreView,
+  profile: loadProfileView,
+};
+
+function navigateTo(view) {
+  currentView = view;
+  document.querySelectorAll(".view").forEach((el) => el.classList.remove("active"));
+  document.getElementById(`view-${view}`).classList.add("active");
+  document.querySelectorAll("[data-page]").forEach((link) => link.classList.toggle("active", link.dataset.page === view));
+  renderTopbar(currentProfile, VIEW_SUBTITLES[view]);
+
+  // Task/focus lists can go stale, so refresh every time except the ones
+  // that are cheap to leave cached (dashboard always refreshes too, since
+  // it reflects everything else).
+  VIEW_LOADERS[view]?.();
+}
+
+// Quick-action links inside the dashboard (data-nav) also drive navigation.
+document.addEventListener("click", (e) => {
+  const el = e.target.closest("[data-nav]");
+  if (el) {
+    e.preventDefault();
+    navigateTo(el.dataset.nav);
+  }
+});
+
+/* =========================================================
+   Auth flow
+   ========================================================= */
+async function handleLogout() {
+  await sb.auth.signOut();
+  currentUser = null;
+  currentProfile = null;
+  document.getElementById("app-shell").classList.remove("show");
+  document.getElementById("auth-shell").style.display = "flex";
+}
+
+async function enterApp(user) {
+  currentUser = user;
+  const { data: profile, error } = await sb.from("profiles").select("*").eq("id", user.id).single();
+  if (error || !profile) {
+    showToast({ icon: "\u26A0\uFE0F", title: "Couldn't load your profile", sub: error?.message || "Please refresh." });
+    return;
+  }
+  currentProfile = profile;
+  applyTheme(profile.active_theme);
+
+  document.getElementById("auth-shell").style.display = "none";
+  document.getElementById("app-shell").classList.add("show");
+
+  renderSidebar("dashboard", profile);
+  navigateTo("dashboard");
+}
+
+(async function initSession() {
+  const { data: { session } } = await sb.auth.getSession();
+  document.getElementById("loading-shell").style.display = "none";
+  if (session) {
+    await enterApp(session.user);
+  } else {
+    document.getElementById("auth-shell").style.display = "flex";
+  }
+})();
+
+sb.auth.onAuthStateChange((event, session) => {
+  if (event === "SIGNED_IN" && session && !currentUser) {
+    enterApp(session.user);
+  }
+});
+
+const tabLogin = document.getElementById("tab-login");
+const tabSignup = document.getElementById("tab-signup");
+const loginForm = document.getElementById("login-form");
+const signupForm = document.getElementById("signup-form");
+const errorBox = document.getElementById("form-error");
+const successBox = document.getElementById("form-success");
+
+function showError(message) {
+  successBox.classList.remove("show");
+  errorBox.textContent = message;
+  errorBox.classList.add("show");
+}
+function showSuccess(message) {
+  errorBox.classList.remove("show");
+  successBox.textContent = message;
+  successBox.classList.add("show");
+}
+function clearMessages() {
+  errorBox.classList.remove("show");
+  successBox.classList.remove("show");
+}
+function switchTab(target) {
+  clearMessages();
+  const isLogin = target === "login";
+  tabLogin.classList.toggle("active", isLogin);
+  tabSignup.classList.toggle("active", !isLogin);
+  loginForm.classList.toggle("active", isLogin);
+  signupForm.classList.toggle("active", !isLogin);
+}
+tabLogin.addEventListener("click", () => switchTab("login"));
+tabSignup.addEventListener("click", () => switchTab("signup"));
+
+loginForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  clearMessages();
+  const submitBtn = document.getElementById("login-submit");
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Logging in...";
+
+  const email = document.getElementById("login-email").value.trim();
+  const password = document.getElementById("login-password").value;
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+
+  submitBtn.disabled = false;
+  submitBtn.textContent = "Log in";
+
+  if (error) {
+    showError(error.message === "Invalid login credentials" ? "That email or password doesn't match our records." : error.message);
+    return;
+  }
+  await enterApp(data.user);
+});
+
+signupForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  clearMessages();
+  const submitBtn = document.getElementById("signup-submit");
+
+  const fullName = document.getElementById("signup-name").value.trim();
+  const email = document.getElementById("signup-email").value.trim();
+  const password = document.getElementById("signup-password").value;
+
+  if (password.length < 6) {
+    showError("Password must be at least 6 characters.");
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Creating account...";
+
+  const { data, error } = await sb.auth.signUp({ email, password, options: { data: { full_name: fullName } } });
+
+  submitBtn.disabled = false;
+  submitBtn.textContent = "Create account";
+
+  if (error) { showError(error.message); return; }
+
+  if (!data.session) {
+    showSuccess("Account created! Check your email to confirm, then log in.");
+    switchTab("login");
+    return;
+  }
+  await enterApp(data.user);
+});
+
+/* =========================================================
+   Gamification engine
+   ========================================================= */
+const XP_TABLE = { Low: 10, Medium: 20, High: 30, focus_session: 15 };
+const COIN_TABLE = { Low: 2, Medium: 5, High: 10, focus_session: 3 };
+
+async function applyReward(profile, xpGain, coinGain) {
+  const previousLevel = profile.level;
+  const newTotalXp = profile.total_xp + xpGain;
+  const newLevel = levelFromXp(newTotalXp);
+  const newCoins = profile.coins + coinGain;
+  const { streak } = computeStreak(profile);
+
+  const updates = {
+    total_xp: newTotalXp, level: newLevel, coins: newCoins,
+    current_streak: streak, last_activity_date: todayDateString(),
+  };
+
+  const { data: updatedProfile, error } = await sb.from("profiles").update(updates).eq("id", profile.id).select().single();
+  if (error) {
+    console.error("Failed to save reward:", error);
+    return { profile, leveledUp: false, newAchievements: [] };
+  }
+
+  const newAchievements = await checkAchievements(updatedProfile);
+  return { profile: updatedProfile, leveledUp: newLevel > previousLevel, newAchievements, xpGain, coinGain };
+}
+
+function todayDateString() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function computeStreak(profile) {
+  const today = todayDateString();
+  if (!profile.last_activity_date) return { streak: 1, isNewDay: true };
+  if (profile.last_activity_date === today) return { streak: profile.current_streak || 1, isNewDay: false };
+  const last = new Date(profile.last_activity_date + "T00:00:00");
+  const now = new Date(today + "T00:00:00");
+  const diffDays = Math.round((now - last) / (1000 * 60 * 60 * 24));
+  if (diffDays === 1) return { streak: (profile.current_streak || 0) + 1, isNewDay: true };
+  return { streak: 1, isNewDay: true };
+}
+
+async function checkAchievements(profile) {
+  const { data: achievements } = await sb.from("achievements").select("*");
+  if (!achievements) return [];
+
+  const { data: unlocked } = await sb.from("user_achievements").select("achievement_id").eq("user_id", profile.id);
+  const unlockedIds = new Set((unlocked || []).map((u) => u.achievement_id));
+
+  const { count: tasksCompleted } = await sb.from("tasks").select("id", { count: "exact", head: true }).eq("user_id", profile.id).eq("status", "Completed");
+  const { count: focusSessions } = await sb.from("focus_sessions").select("id", { count: "exact", head: true }).eq("user_id", profile.id).eq("session_type", "focus");
+
+  const stats = {
+    tasks_completed: tasksCompleted || 0,
+    streak_days: profile.current_streak || 0,
+    focus_sessions_completed: focusSessions || 0,
+    level_reached: profile.level || 1,
+  };
+
+  const newlyUnlocked = [];
+  for (const a of achievements) {
+    if (unlockedIds.has(a.id)) continue;
+    const currentValue = stats[a.requirement_type] ?? 0;
+    if (currentValue >= a.requirement_value) {
+      const { error } = await sb.from("user_achievements").insert({ user_id: profile.id, achievement_id: a.id });
+      if (!error) newlyUnlocked.push(a);
+    }
+  }
+  return newlyUnlocked;
+}
+
+function announceReward(result) {
+  if (!result) return;
+  if (result.xpGain || result.coinGain) {
+    showToast({ icon: "\u2728", title: `+${result.xpGain} XP, +${result.coinGain} coins`, sub: "Nice work \u2014 keep the streak going." });
+  }
+  if (result.leveledUp) {
+    showToast({ icon: "\u{1F389}", title: `Level up! You're now level ${result.profile.level}`, sub: "New heights, new goals.", duration: 4000 });
+  }
+  (result.newAchievements || []).forEach((a) => {
+    showToast({ icon: a.icon || "\u{1F3C5}", title: `Achievement unlocked: ${a.name}`, sub: a.description, duration: 4200 });
+  });
+}
+
+/* =========================================================
+   Dashboard view
+   ========================================================= */
+const XP_RING_CIRCUMFERENCE = 2 * Math.PI * 56;
+
+async function loadDashboard() {
+  renderHeroHud(currentProfile);
+
+  const [{ data: tasks }, { count: completedCount }] = await Promise.all([
+    sb.from("tasks").select("*").eq("user_id", currentUser.id),
+    sb.from("tasks").select("id", { count: "exact", head: true }).eq("user_id", currentUser.id).eq("status", "Completed"),
+  ]);
+
+  document.getElementById("hero-completed").textContent = completedCount || 0;
+  renderTodayTasks(tasks || []);
+  renderDailyGoal(tasks || []);
+  renderUpcomingDeadlines(tasks || []);
+}
+
+function renderHeroHud(profile) {
+  document.getElementById("hero-level").textContent = profile.level;
+  document.getElementById("hero-xp").textContent = profile.total_xp;
+  document.getElementById("hero-coins").textContent = profile.coins;
+  document.getElementById("hero-streak").textContent = profile.current_streak;
+
+  const pct = xpIntoCurrentLevel(profile.total_xp) / XP_PER_LEVEL;
+  const ring = document.getElementById("xp-ring-fill");
+  ring.style.strokeDasharray = `${XP_RING_CIRCUMFERENCE}`;
+  ring.style.strokeDashoffset = `${XP_RING_CIRCUMFERENCE * (1 - pct)}`;
+}
+
+function isSameLocalDay(isoString, date) {
+  if (!isoString) return false;
+  return new Date(isoString).toDateString() === date.toDateString();
+}
+
+function renderTodayTasks(tasks) {
+  const today = new Date();
+  const todays = tasks.filter((t) => t.status !== "Completed" && t.deadline && isSameLocalDay(t.deadline, today));
+  const list = document.getElementById("today-tasks-list");
+  if (todays.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">\u{1F324}\uFE0F</div><p>Nothing due today \u2014 enjoy the calm, or get ahead on tomorrow.</p></div>`;
+    return;
+  }
+  list.innerHTML = todays.slice(0, 5).map((t) => `
+    <div class="quest-card priority-${t.priority}">
+      <div class="quest-card-top"><h3>${escapeHtml(t.title)}</h3><span class="tag">${t.priority}</span></div>
+      <div class="quest-meta"><span class="tag">${escapeHtml(t.subject)}</span></div>
+    </div>
+  `).join("");
+}
+
+function renderDailyGoal(tasks) {
+  const today = new Date();
+  const todaysAll = tasks.filter((t) => t.deadline && isSameLocalDay(t.deadline, today));
+  const done = todaysAll.filter((t) => t.status === "Completed").length;
+  const total = todaysAll.length;
+  const pct = total === 0 ? 0 : Math.round((done / total) * 100);
+  document.getElementById("daily-goal-bar").style.width = `${pct}%`;
+  document.getElementById("daily-goal-caption").textContent = total === 0 ? "No tasks due today" : `${done} of ${total} tasks done today`;
+  document.getElementById("daily-goal-percent").textContent = `${pct}%`;
+}
+
+function renderUpcomingDeadlines(tasks) {
+  const now = Date.now();
+  const in7Days = now + 7 * 24 * 60 * 60 * 1000;
+  const upcoming = tasks
+    .filter((t) => t.status !== "Completed" && t.deadline)
+    .filter((t) => new Date(t.deadline).getTime() <= in7Days)
+    .sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+
+  const list = document.getElementById("upcoming-deadlines-list");
+  if (upcoming.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">\u{1F4ED}</div><p>No deadlines in the next 7 days.</p></div>`;
+    return;
+  }
+  list.innerHTML = upcoming.slice(0, 6).map((t) => {
+    const overdue = isOverdue(t.deadline, t.status);
+    const soon = isWithinHours(t.deadline, 24);
+    return `
+      <div class="deadline-list-item">
+        <span>${escapeHtml(t.title)}</span>
+        <span class="tag ${overdue || soon ? "overdue-tag" : ""}">${formatShortDate(t.deadline)}</span>
+      </div>
+    `;
+  }).join("");
+}
+
+/* =========================================================
+   Task Planner view
+   ========================================================= */
+let allTasks = [];
+const modalBackdrop = document.getElementById("task-modal-backdrop");
+const taskForm = document.getElementById("task-form");
+const taskFormError = document.getElementById("task-form-error");
+let tasksViewWired = false;
+
+async function loadTasksView() {
+  if (!tasksViewWired) {
+    document.getElementById("open-add-task").addEventListener("click", () => openTaskModal());
+    document.getElementById("close-task-modal").addEventListener("click", closeTaskModal);
+    modalBackdrop.addEventListener("click", (e) => { if (e.target === modalBackdrop) closeTaskModal(); });
+    taskForm.addEventListener("submit", handleTaskFormSubmit);
+    ["filter-subject", "filter-priority", "filter-status", "filter-deadline"].forEach((id) =>
+      document.getElementById(id).addEventListener("change", renderTaskList)
+    );
+    tasksViewWired = true;
+  }
+  await loadTasks();
+}
+
+async function loadTasks() {
+  const { data, error } = await sb.from("tasks").select("*").eq("user_id", currentUser.id).order("deadline", { ascending: true, nullsFirst: false });
+  if (error) {
+    document.getElementById("task-list").innerHTML = `<p style="color:var(--coral);">Couldn't load tasks: ${error.message}</p>`;
+    return;
+  }
+  allTasks = data || [];
+  populateSubjectFilter();
+  renderTaskList();
+}
+
+function populateSubjectFilter() {
+  const select = document.getElementById("filter-subject");
+  const current = select.value;
+  const subjects = [...new Set(allTasks.map((t) => t.subject).filter(Boolean))].sort();
+  select.innerHTML = `<option value="">All subjects</option>` + subjects.map((s) => `<option ${s === current ? "selected" : ""}>${escapeHtml(s)}</option>`).join("");
+}
+
+function filteredTasks() {
+  const subject = document.getElementById("filter-subject").value;
+  const priority = document.getElementById("filter-priority").value;
+  const status = document.getElementById("filter-status").value;
+  const deadlineFilter = document.getElementById("filter-deadline").value;
+  const now = Date.now();
+  const endOfWeek = now + 7 * 24 * 60 * 60 * 1000;
+
+  return allTasks.filter((t) => {
+    if (subject && t.subject !== subject) return false;
+    if (priority && t.priority !== priority) return false;
+    if (status && t.status !== status) return false;
+    if (deadlineFilter === "overdue" && !isOverdue(t.deadline, t.status)) return false;
+    if (deadlineFilter === "today") {
+      if (!t.deadline || new Date(t.deadline).toDateString() !== new Date().toDateString()) return false;
+    }
+    if (deadlineFilter === "week") {
+      if (!t.deadline) return false;
+      const time = new Date(t.deadline).getTime();
+      if (time < now || time > endOfWeek) return false;
+    }
+    return true;
+  });
+}
+
+function renderTaskList() {
+  const tasks = filteredTasks();
+  const list = document.getElementById("task-list");
+  if (tasks.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">\u{1F5D2}\uFE0F</div><p>No tasks match these filters yet. Add one to start earning XP.</p></div>`;
+    return;
+  }
+  list.innerHTML = tasks.map((t) => {
+    const overdue = isOverdue(t.deadline, t.status);
+    return `
+      <div class="quest-card priority-${t.priority} ${overdue ? "overdue" : ""}">
+        <div class="quest-card-top">
+          <h3>${escapeHtml(t.title)}</h3>
+          <span class="tag ${overdue ? "overdue-tag" : ""}">${t.status}</span>
+        </div>
+        ${t.description ? `<p class="quest-card-desc">${escapeHtml(t.description)}</p>` : ""}
+        <div class="quest-meta">
+          <span class="tag">${escapeHtml(t.subject || "General")}</span>
+          <span class="tag">${t.priority} priority</span>
+          <span class="tag">${t.estimated_minutes || 0} min</span>
+          <span class="tag ${overdue ? "overdue-tag" : ""}">${t.deadline ? formatDateTime(t.deadline) : "No deadline"}</span>
+        </div>
+        <div class="quest-card-actions">
+          ${t.status !== "Completed"
+            ? `<button class="btn btn-gold" data-action="complete" data-id="${t.id}">\u2714 Mark complete</button>`
+            : `<span class="tag" style="color:var(--mint);border-color:var(--mint);">Completed</span>`}
+          <button class="btn btn-ghost" data-action="edit" data-id="${t.id}">Edit</button>
+          <button class="btn btn-ghost" data-action="delete" data-id="${t.id}">Delete</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  list.querySelectorAll("[data-action]").forEach((btn) => {
+    btn.addEventListener("click", () => handleTaskAction(btn.dataset.action, btn.dataset.id));
+  });
+}
+
+function handleTaskAction(action, id) {
+  const task = allTasks.find((t) => t.id === id);
+  if (!task) return;
+  if (action === "edit") openTaskModal(task);
+  if (action === "delete") deleteTask(task);
+  if (action === "complete") completeTask(task);
+}
+
+function openTaskModal(task = null) {
+  taskFormError.classList.remove("show");
+  document.getElementById("task-modal-title").textContent = task ? "Edit task" : "Add task";
+  document.getElementById("task-id").value = task?.id || "";
+  document.getElementById("task-title").value = task?.title || "";
+  document.getElementById("task-description").value = task?.description || "";
+  document.getElementById("task-subject").value = task?.subject || "";
+  document.getElementById("task-priority").value = task?.priority || "Medium";
+  document.getElementById("task-deadline").value = task?.deadline ? toLocalInputValue(task.deadline) : "";
+  document.getElementById("task-estimated").value = task?.estimated_minutes || 30;
+  document.getElementById("task-status").value = task?.status || "Pending";
+  modalBackdrop.classList.add("show");
+}
+
+function closeTaskModal() {
+  modalBackdrop.classList.remove("show");
+  taskForm.reset();
+}
+
+function toLocalInputValue(isoString) {
+  const d = new Date(isoString);
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+async function handleTaskFormSubmit(e) {
+  e.preventDefault();
+  taskFormError.classList.remove("show");
+  const title = document.getElementById("task-title").value.trim();
+  if (!title) {
+    taskFormError.textContent = "Please give the task a title.";
+    taskFormError.classList.add("show");
+    return;
+  }
+
+  const id = document.getElementById("task-id").value;
+  const deadlineValue = document.getElementById("task-deadline").value;
+  const payload = {
+    user_id: currentUser.id,
+    title,
+    description: document.getElementById("task-description").value.trim(),
+    subject: document.getElementById("task-subject").value.trim() || "General",
+    priority: document.getElementById("task-priority").value,
+    status: document.getElementById("task-status").value,
+    deadline: deadlineValue ? new Date(deadlineValue).toISOString() : null,
+    estimated_minutes: Number(document.getElementById("task-estimated").value) || 30,
+  };
+
+  const submitBtn = document.getElementById("task-form-submit");
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Saving...";
+
+  let error;
+  if (id) { ({ error } = await sb.from("tasks").update(payload).eq("id", id)); }
+  else { ({ error } = await sb.from("tasks").insert(payload)); }
+
+  submitBtn.disabled = false;
+  submitBtn.textContent = "Save task";
+
+  if (error) {
+    taskFormError.textContent = error.message;
+    taskFormError.classList.add("show");
+    return;
+  }
+  closeTaskModal();
+  await loadTasks();
+}
+
+async function deleteTask(task) {
+  if (!confirm(`Delete "${task.title}"? This can't be undone.`)) return;
+  const { error } = await sb.from("tasks").delete().eq("id", task.id);
+  if (error) { showToast({ icon: "\u26A0\uFE0F", title: "Couldn't delete task", sub: error.message }); return; }
+  await loadTasks();
+}
+
+async function completeTask(task) {
+  const { error: updateError } = await sb.from("tasks").update({ status: "Completed", completed_at: new Date().toISOString() }).eq("id", task.id);
+  if (updateError) { showToast({ icon: "\u26A0\uFE0F", title: "Couldn't complete task", sub: updateError.message }); return; }
+
+  const xpGain = XP_TABLE[task.priority] || 10;
+  const coinGain = COIN_TABLE[task.priority] || 2;
+  const result = await applyReward(currentProfile, xpGain, coinGain);
+  currentProfile = result.profile;
+  announceReward(result);
+  renderTopbar(currentProfile, VIEW_SUBTITLES.tasks);
+  renderSidebar("tasks", currentProfile);
+
+  await loadTasks();
+}
+
+/* =========================================================
+   Focus Timer view
+   ========================================================= */
+let currentMode = "focus";
+const modeMinutes = { focus: 25, short_break: 5, long_break: 15 };
+let secondsRemaining = modeMinutes.focus * 60;
+let timerHandle = null;
+let isRunning = false;
+let focusViewWired = false;
+
+const display = document.getElementById("timer-display");
+const startBtn = document.getElementById("timer-start");
+const pauseBtn = document.getElementById("timer-pause");
+const resetBtn = document.getElementById("timer-reset");
+const skipBtn = document.getElementById("timer-skip");
+const taskSelect = document.getElementById("focus-task-select");
+
+async function loadFocusView() {
+  if (!focusViewWired) {
+    document.querySelectorAll(".timer-mode-btn").forEach((btn) =>
+      btn.addEventListener("click", () => switchMode(btn.dataset.mode, Number(btn.dataset.minutes)))
+    );
+    startBtn.addEventListener("click", startTimer);
+    pauseBtn.addEventListener("click", pauseTimer);
+    resetBtn.addEventListener("click", resetTimer);
+    skipBtn.addEventListener("click", () => finishSession(true));
+    updateDisplay();
+    focusViewWired = true;
+  }
+  await loadTaskOptions();
+  await loadTodaysSessions();
+}
+
+async function loadTaskOptions() {
+  taskSelect.querySelectorAll("option:not(:first-child)").forEach((o) => o.remove());
+  const { data: tasks } = await sb.from("tasks").select("id,title").eq("user_id", currentUser.id).neq("status", "Completed");
+  (tasks || []).forEach((t) => {
+    const opt = document.createElement("option");
+    opt.value = t.id;
+    opt.textContent = t.title;
+    taskSelect.appendChild(opt);
+  });
+}
+
+function switchMode(mode, minutes) {
+  if (isRunning) {
+    if (!confirm("Switching modes will reset your current timer. Continue?")) return;
+    pauseTimer();
+  }
+  currentMode = mode;
+  secondsRemaining = minutes * 60;
+  document.querySelectorAll(".timer-mode-btn").forEach((b) => b.classList.toggle("active", b.dataset.mode === mode));
+  updateDisplay();
+}
+
+function updateDisplay() {
+  const mins = Math.floor(secondsRemaining / 60);
+  const secs = secondsRemaining % 60;
+  display.textContent = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+}
+
+function startTimer() {
+  if (isRunning) return;
+  isRunning = true;
+  startBtn.disabled = true;
+  pauseBtn.disabled = false;
+  timerHandle = setInterval(() => {
+    secondsRemaining -= 1;
+    updateDisplay();
+    if (secondsRemaining <= 0) finishSession(false);
+  }, 1000);
+}
+
+function pauseTimer() {
+  isRunning = false;
+  clearInterval(timerHandle);
+  startBtn.disabled = false;
+  pauseBtn.disabled = true;
+}
+
+function resetTimer() {
+  pauseTimer();
+  secondsRemaining = modeMinutes[currentMode] * 60;
+  updateDisplay();
+}
+
+async function finishSession(skipped) {
+  pauseTimer();
+  const fullMinutes = modeMinutes[currentMode];
+  const elapsedMinutes = skipped ? Math.max(1, Math.round((fullMinutes * 60 - secondsRemaining) / 60)) : fullMinutes;
+
+  const { error } = await sb.from("focus_sessions").insert({
+    user_id: currentUser.id,
+    task_id: taskSelect.value || null,
+    duration_minutes: elapsedMinutes,
+    session_type: currentMode,
+    completed_at: new Date().toISOString(),
+  });
+
+  if (error) {
+    showToast({ icon: "\u26A0\uFE0F", title: "Couldn't save session", sub: error.message });
+  } else if (currentMode === "focus" && !skipped) {
+    const result = await applyReward(currentProfile, XP_TABLE.focus_session, COIN_TABLE.focus_session);
+    currentProfile = result.profile;
+    announceReward(result);
+    renderTopbar(currentProfile, VIEW_SUBTITLES.focus);
+    renderSidebar("focus", currentProfile);
+  } else {
+    showToast({ icon: "\u2615", title: "Break logged", sub: "Back to it when you're ready." });
+  }
+
+  resetTimer();
+  await loadTodaysSessions();
+}
+
+async function loadTodaysSessions() {
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+
+  const { data: sessions } = await sb.from("focus_sessions").select("*").eq("user_id", currentUser.id).gte("completed_at", startOfDay.toISOString()).order("completed_at", { ascending: false });
+  const list = sessions || [];
+  const totalFocusMinutes = list.filter((s) => s.session_type === "focus").reduce((sum, s) => sum + s.duration_minutes, 0);
+  document.getElementById("focus-total-today").textContent = `${totalFocusMinutes} min`;
+
+  const container = document.getElementById("focus-session-list");
+  if (list.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">\u23F1\uFE0F</div><p>No sessions yet today \u2014 start one above.</p></div>`;
+    return;
+  }
+  const typeLabel = { focus: "Focus", short_break: "Short break", long_break: "Long break" };
+  container.innerHTML = list.slice(0, 8).map((s) => `
+    <div class="deadline-list-item">
+      <span>${typeLabel[s.session_type]} \u00B7 ${s.duration_minutes} min</span>
+      <span class="tag">${formatDateTime(s.completed_at)}</span>
+    </div>
+  `).join("");
+}
+
+/* =========================================================
+   Calendar view
+   ========================================================= */
+let calTasks = [];
+let viewYear, viewMonth;
+let calendarViewWired = false;
+
+async function loadCalendarView() {
+  const today = new Date();
+  if (viewYear === undefined) { viewYear = today.getFullYear(); viewMonth = today.getMonth(); }
+
+  const { data: tasks } = await sb.from("tasks").select("*").eq("user_id", currentUser.id).not("deadline", "is", null);
+  calTasks = tasks || [];
+
+  renderCalendar();
+  renderDeadlineLists();
+
+  if (!calendarViewWired) {
+    document.getElementById("cal-prev").addEventListener("click", () => changeMonth(-1));
+    document.getElementById("cal-next").addEventListener("click", () => changeMonth(1));
+    calendarViewWired = true;
+    maybeNotify24h();
+  }
+}
+
+function changeMonth(delta) {
+  viewMonth += delta;
+  if (viewMonth < 0) { viewMonth = 11; viewYear -= 1; }
+  if (viewMonth > 11) { viewMonth = 0; viewYear += 1; }
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const monthLabel = new Date(viewYear, viewMonth, 1).toLocaleDateString(undefined, { month: "long", year: "numeric" });
+  document.getElementById("cal-month-label").textContent = monthLabel;
+
+  const grid = document.getElementById("cal-grid");
+  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  let html = dayNames.map((d) => `<div class="cal-day-head">${d}</div>`).join("");
+
+  const firstDay = new Date(viewYear, viewMonth, 1).getDay();
+  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+  const today = new Date();
+
+  for (let i = 0; i < firstDay; i++) html += `<div class="cal-cell empty"></div>`;
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const cellDate = new Date(viewYear, viewMonth, day);
+    const isToday = cellDate.toDateString() === today.toDateString();
+    const tasksThatDay = calTasks.filter((t) => new Date(t.deadline).toDateString() === cellDate.toDateString());
+    html += `
+      <div class="cal-cell ${isToday ? "today" : ""}">
+        <div class="cal-date">${day}</div>
+        ${tasksThatDay.slice(0, 3).map((t) => `<span class="cal-task-dot priority-${t.priority}" title="${escapeHtml(t.title)}">${escapeHtml(t.title)}</span>`).join("")}
+        ${tasksThatDay.length > 3 ? `<span class="cal-task-dot">+${tasksThatDay.length - 3} more</span>` : ""}
+      </div>
+    `;
+  }
+  grid.innerHTML = html;
+}
+
+function renderDeadlineLists() {
+  const now = Date.now();
+  const in7Days = now + 7 * 24 * 60 * 60 * 1000;
+  const upcoming = calTasks
+    .filter((t) => t.status !== "Completed")
+    .filter((t) => new Date(t.deadline).getTime() <= in7Days)
+    .sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+
+  const weekList = document.getElementById("deadline-week-list");
+  weekList.innerHTML = upcoming.length === 0
+    ? `<div class="empty-state"><div class="empty-icon">\u{1F4ED}</div><p>Nothing due in the next 7 days.</p></div>`
+    : upcoming.map((t) => {
+        const overdue = isOverdue(t.deadline, t.status);
+        return `
+          <div class="deadline-list-item">
+            <span>${escapeHtml(t.title)} <span class="tag" style="margin-left:6px;">${t.priority}</span></span>
+            <span class="tag ${overdue ? "overdue-tag" : ""}">${formatDateTime(t.deadline)}</span>
+          </div>
+        `;
+      }).join("");
+
+  const soon = upcoming.filter((t) => isWithinHours(t.deadline, 24));
+  const soonList = document.getElementById("deadline-soon-list");
+  soonList.innerHTML = soon.length === 0
+    ? `<p style="color:var(--muted);">No urgent deadlines.</p>`
+    : soon.map((t) => `
+        <div class="deadline-list-item">
+          <span>\u23F0 ${escapeHtml(t.title)}</span>
+          <span class="tag overdue-tag">${formatDateTime(t.deadline)}</span>
+        </div>
+      `).join("");
+}
+
+function maybeNotify24h() {
+  const soon = calTasks.filter((t) => t.status !== "Completed" && isWithinHours(t.deadline, 24));
+  soon.forEach((t) => {
+    showToast({ icon: "\u23F0", title: `Due soon: ${t.title}`, sub: `Deadline ${formatDateTime(t.deadline)}`, duration: 5000 });
+  });
+}
+
+/* =========================================================
+   Reward Store view
+   ========================================================= */
+async function loadStoreView() {
+  document.getElementById("store-coin-count").textContent = currentProfile.coins;
+
+  const [{ data: items }, { data: owned }] = await Promise.all([
+    sb.from("store_items").select("*").order("price", { ascending: true }),
+    sb.from("user_items").select("*").eq("user_id", currentUser.id),
+  ]);
+
+  const ownedByItemId = Object.fromEntries((owned || []).map((o) => [o.item_id, o]));
+  const grid = document.getElementById("store-grid");
+
+  grid.innerHTML = (items || []).map((item) => {
+    const owns = !!ownedByItemId[item.id];
+    const active = ownedByItemId[item.id]?.is_active;
+    const swatchClass = item.item_type === "theme" ? `theme-${item.theme_value || "default"}` : "theme-sticker";
+    const swatchContent = item.item_type === "sticker" ? "\u2B50" : "";
+
+    let actionHtml;
+    if (owns && item.item_type === "theme") {
+      actionHtml = active
+        ? `<span class="tag" style="color:var(--mint);border-color:var(--mint);">Active</span>`
+        : `<button class="btn btn-ghost btn-block" data-action="activate" data-id="${item.id}">Activate</button>`;
+    } else if (owns) {
+      actionHtml = `<span class="tag" style="color:var(--mint);border-color:var(--mint);">Owned</span>`;
+    } else {
+      const canAfford = currentProfile.coins >= item.price;
+      actionHtml = `<button class="btn ${canAfford ? "btn-gold" : "btn-ghost"} btn-block" data-action="buy" data-id="${item.id}" ${canAfford ? "" : "disabled"}>
+        ${canAfford ? `Buy for \u{1FA99} ${item.price}` : `Need \u{1FA99} ${item.price}`}
+      </button>`;
+    }
+
+    return `
+      <div class="store-item">
+        <div class="store-swatch ${swatchClass}">${swatchContent}</div>
+        <div><h3>${escapeHtml(item.name)}</h3><p style="font-size:13px;margin:4px 0 0;">${escapeHtml(item.description || "")}</p></div>
+        ${actionHtml}
+      </div>
+    `;
+  }).join("");
+
+  grid.querySelectorAll("[data-action]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const item = items.find((i) => i.id === btn.dataset.id);
+      if (btn.dataset.action === "buy") purchaseItem(item);
+      if (btn.dataset.action === "activate") activateTheme(item);
+    });
+  });
+}
+
+async function purchaseItem(item) {
+  if (currentProfile.coins < item.price) {
+    showToast({ icon: "\u{1FA99}", title: "Not enough coins", sub: `You need ${item.price - currentProfile.coins} more coins.` });
+    return;
+  }
+  const { error: insertError } = await sb.from("user_items").insert({ user_id: currentUser.id, item_id: item.id, is_active: false });
+  if (insertError) { showToast({ icon: "\u26A0\uFE0F", title: "Purchase failed", sub: insertError.message }); return; }
+
+  const { data: updatedProfile, error: updateError } = await sb.from("profiles").update({ coins: currentProfile.coins - item.price }).eq("id", currentUser.id).select().single();
+  if (updateError) { showToast({ icon: "\u26A0\uFE0F", title: "Purchase failed", sub: updateError.message }); return; }
+
+  currentProfile = updatedProfile;
+  renderTopbar(currentProfile, VIEW_SUBTITLES.store);
+  renderSidebar("store", currentProfile);
+  showToast({ icon: "\u{1F381}", title: `Unlocked: ${item.name}`, sub: "Check your profile to activate it." });
+
+  await loadStoreView();
+}
+
+async function activateTheme(item) {
+  await sb.from("user_items").update({ is_active: false }).eq("user_id", currentUser.id);
+  await sb.from("user_items").update({ is_active: true }).eq("user_id", currentUser.id).eq("item_id", item.id);
+
+  const { data: updatedProfile } = await sb.from("profiles").update({ active_theme: item.theme_value || "default" }).eq("id", currentUser.id).select().single();
+  currentProfile = updatedProfile;
+  applyTheme(currentProfile.active_theme);
+  showToast({ icon: "\u{1F3A8}", title: `${item.name} activated` });
+  await loadStoreView();
+}
+
+/* =========================================================
+   Profile & Analytics view
+   ========================================================= */
+let profileViewWired = false;
+
+async function loadProfileView() {
+  fillProfileForm(currentProfile);
+  await loadThemeOptions(currentProfile);
+  await loadStats();
+  await loadBadges();
+  await loadCharts();
+
+  if (!profileViewWired) {
+    document.getElementById("profile-form").addEventListener("submit", saveProfile);
+    profileViewWired = true;
+  }
+}
+
+function fillProfileForm(profile) {
+  document.getElementById("profile-name").value = profile.full_name;
+  document.getElementById("p-level").textContent = profile.level;
+  document.getElementById("p-xp").textContent = profile.total_xp;
+  document.getElementById("p-coins").textContent = profile.coins;
+  document.getElementById("p-streak").textContent = profile.current_streak;
+}
+
+async function loadThemeOptions(profile) {
+  const { data: ownedThemes } = await sb.from("user_items").select("item_id, store_items(name, theme_value, item_type)").eq("user_id", currentUser.id);
+  const select = document.getElementById("profile-theme");
+  select.querySelectorAll("option:not(:first-child)").forEach((o) => o.remove());
+  (ownedThemes || []).filter((o) => o.store_items?.item_type === "theme").forEach((o) => {
+    const opt = document.createElement("option");
+    opt.value = o.store_items.theme_value;
+    opt.textContent = o.store_items.name;
+    select.appendChild(opt);
+  });
+  select.value = profile.active_theme || "default";
+}
+
+async function saveProfile(e) {
+  e.preventDefault();
+  const name = document.getElementById("profile-name").value.trim();
+  const theme = document.getElementById("profile-theme").value;
+
+  const { data: updated, error } = await sb.from("profiles").update({ full_name: name, active_theme: theme }).eq("id", currentUser.id).select().single();
+  const successBox = document.getElementById("profile-form-success");
+
+  if (error) { showToast({ icon: "\u26A0\uFE0F", title: "Couldn't save profile", sub: error.message }); return; }
+
+  currentProfile = updated;
+  applyTheme(updated.active_theme);
+  renderSidebar("profile", updated);
+  renderTopbar(updated, VIEW_SUBTITLES.profile);
+  successBox.textContent = "Profile updated.";
+  successBox.classList.add("show");
+  setTimeout(() => successBox.classList.remove("show"), 2500);
+}
+
+async function loadStats() {
+  const { count: tasksCompleted } = await sb.from("tasks").select("id", { count: "exact", head: true }).eq("user_id", currentUser.id).eq("status", "Completed");
+  const { data: sessions } = await sb.from("focus_sessions").select("duration_minutes, session_type").eq("user_id", currentUser.id);
+  const totalFocus = (sessions || []).filter((s) => s.session_type === "focus").reduce((sum, s) => sum + s.duration_minutes, 0);
+  document.getElementById("p-tasks").textContent = tasksCompleted || 0;
+  document.getElementById("p-focus").textContent = `${totalFocus} min`;
+}
+
+async function loadBadges() {
+  const [{ data: achievements }, { data: unlocked }] = await Promise.all([
+    sb.from("achievements").select("*"),
+    sb.from("user_achievements").select("achievement_id").eq("user_id", currentUser.id),
+  ]);
+  const unlockedIds = new Set((unlocked || []).map((u) => u.achievement_id));
+  const grid = document.getElementById("badge-grid");
+
+  if (!achievements || achievements.length === 0) {
+    grid.innerHTML = `<p style="color:var(--muted);">No achievements configured yet.</p>`;
+    return;
+  }
+  grid.innerHTML = achievements.map((a) => `
+    <div class="badge-item ${unlockedIds.has(a.id) ? "" : "locked"}">
+      <div class="badge-icon">${a.icon}</div>
+      <div class="badge-name">${escapeHtml(a.name)}</div>
+    </div>
+  `).join("");
+}
+
+async function loadCharts() {
+  const days = lastNDays(7);
+  const startIso = days[0].toISOString();
+
+  const [{ data: tasks }, { data: sessions }] = await Promise.all([
+    sb.from("tasks").select("completed_at, subject").eq("user_id", currentUser.id).eq("status", "Completed"),
+    sb.from("focus_sessions").select("duration_minutes, completed_at, session_type").eq("user_id", currentUser.id).gte("completed_at", startIso),
+  ]);
+
+  renderDailyBarChart("chart-tasks", days, (dateKey) => (tasks || []).filter((t) => t.completed_at && dateKeyOf(t.completed_at) === dateKey).length);
+  renderDailyBarChart("chart-focus", days, (dateKey) => (sessions || []).filter((s) => s.session_type === "focus" && dateKeyOf(s.completed_at) === dateKey).reduce((sum, s) => sum + s.duration_minutes, 0));
+  renderSubjectChart(tasks || []);
+}
+
+function lastNDays(n) {
+  const out = [];
+  for (let i = n - 1; i >= 0; i--) {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() - i);
+    out.push(d);
+  }
+  return out;
+}
+
+function dateKeyOf(isoString) {
+  const d = new Date(isoString);
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+}
+
+function renderDailyBarChart(containerId, days, valueFn) {
+  const values = days.map((d) => valueFn(`${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`));
+  const max = Math.max(1, ...values);
+  const container = document.getElementById(containerId);
+  container.innerHTML = days.map((d, i) => {
+    const pct = Math.round((values[i] / max) * 100);
+    const label = d.toLocaleDateString(undefined, { weekday: "narrow" });
+    return `<div class="chart-bar-col"><div class="chart-bar" style="height:${pct}%;" title="${values[i]}"></div><div class="chart-bar-label">${label}</div></div>`;
+  }).join("");
+}
+
+function renderSubjectChart(completedTasks) {
+  const bySubject = {};
+  completedTasks.forEach((t) => { const key = t.subject || "General"; bySubject[key] = (bySubject[key] || 0) + 1; });
+  const entries = Object.entries(bySubject).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const container = document.getElementById("chart-subjects");
+
+  if (entries.length === 0) {
+    container.innerHTML = `<p style="color:var(--muted);font-size:13px;">Complete a few tasks to see this chart.</p>`;
+    return;
+  }
+  const max = Math.max(1, ...entries.map(([, v]) => v));
+  container.innerHTML = entries.map(([subject, count]) => {
+    const pct = Math.round((count / max) * 100);
+    return `<div class="chart-bar-col"><div class="chart-bar" style="height:${pct}%;" title="${count}"></div><div class="chart-bar-label">${escapeHtml(subject.slice(0, 4))}</div></div>`;
+  }).join("");
+}
+</script>
+</body>
+</html>
